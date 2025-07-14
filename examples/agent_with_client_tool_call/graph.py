@@ -12,10 +12,10 @@ from langchain_core.messages import SystemMessage
 from src import JarvisKitRuntimeManager, JarvisKitToolNode, JarvisKitRuntime
 
 @tool
-def scan_cv_tool(cv_url: str, tool_call_id: Annotated[str, InjectedToolCallId]):
+async def scan_cv_tool(cv_url: str, tool_call_id: Annotated[str, InjectedToolCallId]):
     """Extract structured data from a CV file (PDF, DOC, image)."""
     jarviskit_runtime: JarvisKitRuntime = JarvisKitRuntimeManager().get_runtime()
-    response = jarviskit_runtime.wait_for_client_response(tool_call_id, timeout=120)
+    response = await jarviskit_runtime.wait_for_client_response(tool_call_id, timeout=120)
     
     return response
 

@@ -32,8 +32,8 @@ class JarvisKitCallbackHandler(AsyncCallbackHandler):
     current_tool_call_id: str | None = None
     current_message_id: str | None = None
     
-    def __init__(self, agent_runtime: JarvisKitRuntime, thread_id: str):
-        self.jarvis_runtime = agent_runtime
+    def __init__(self, jarviskit_runtime: JarvisKitRuntime, thread_id: str):
+        self.jarvis_runtime = jarviskit_runtime
         self.thread_id = thread_id
         self.order = 0
         self.root_run_id = None

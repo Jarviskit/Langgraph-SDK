@@ -39,8 +39,8 @@ class ScanCVTool(BaseTool):
         cv_url: str,
         tool_call_id: str
     ):
-        agent_runtime: JarvisKitRuntime = JarvisKitRuntimeManager().get_runtime()
-        response = await agent_runtime.wait_for_client_response(tool_call_id, timeout=120)
+        jarviskit_runtime: JarvisKitRuntime = JarvisKitRuntimeManager().get_runtime()
+        response = await jarviskit_runtime.wait_for_client_response(tool_call_id, timeout=120)
         return response
 
 
@@ -48,7 +48,7 @@ class State(TypedDict):
     pass
 
 async def agent(state: State, config: RunnableConfig) -> Command[Literal['__end__', 'tool_execution_handler']]:
-    agent_runtime: JarvisKitRuntime = JarvisKitRuntimeManager().get_runtime()
+    jarviskit_runtime: JarvisKitRuntime = JarvisKitRuntimeManager().get_runtime()
     thread_id = config.get("configurable", {}).get("thread_id", "")
     llm = init_chat_model(
         model="openai:gpt-4.1-nano",
@@ -59,11 +59,11 @@ async def agent(state: State, config: RunnableConfig) -> Command[Literal['__end_
     response = await llm.ainvoke(
         [
             SystemMessage("You are a helpful assistant that can help me with my tasks. * **IMPORTANT**: Before using any tool, you **MUST FIRST** explain to the user what you're about to do. Only then should you call the appropriate tool."),
-            *agent_runtime.get_messages(thread_id)
+            *jarviskit_runtime.get_messages(thread_id)
         ]
     )
     
-    agent_runtime.put_store_message(thread_id, response) # This is important to save the response to the store
+    jarviskit_runtime.put_store_message(thread_id, response) # This is important to save the response to the store
     
     if hasattr(response, "tool_calls") and len(response.tool_calls) > 0:
         return Command( goto="tool_execution_handler" )

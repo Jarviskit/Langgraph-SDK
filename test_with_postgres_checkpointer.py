@@ -50,9 +50,9 @@ async def bootstrap():
             max_concurrent_workers=10,
             rabbitmq_config=rabbitmq_config
         )
-        agent_runtime = await JarvisKitRuntimeManager.init_runtime(params, agents=agents)
+        jarviskit_runtime = await JarvisKitRuntimeManager.init_runtime(params, agents=agents)
         
-        await agent_runtime.serve(default_message_handler)
+        await jarviskit_runtime.serve(default_message_handler)
 
 if __name__ == "__main__":
     asyncio.run(bootstrap())

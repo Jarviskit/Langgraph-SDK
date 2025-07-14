@@ -17,7 +17,7 @@ class State(TypedDict):
     protected_key: str | None = "protected_key"
 
 async def agent(state: State, config: RunnableConfig) -> Command[Literal['__end__']]:
-    agent_runtime: JarvisKitRuntime = JarvisKitRuntimeManager().get_runtime()
+    jarviskit_runtime: JarvisKitRuntime = JarvisKitRuntimeManager().get_runtime()
     thread_id = config.get("configurable", {}).get("thread_id", "")
     
     llm = init_chat_model(
@@ -65,11 +65,11 @@ async def agent(state: State, config: RunnableConfig) -> Command[Literal['__end_
     response = await llm.ainvoke(
         [
             SystemMessage("You are a helpful assistant that can help me with my tasks."),
-            *agent_runtime.get_messages(thread_id)
+            *jarviskit_runtime.get_messages(thread_id)
         ]
     )
     
-    agent_runtime.put_store_message(thread_id, response) # This is important to save the response to the store
+    jarviskit_runtime.put_store_message(thread_id, response) # This is important to save the response to the store
     
     # Send a custom event to the runtime. Better use "append" strategy to append the event to the conversation.
     await asyncio.sleep(1)

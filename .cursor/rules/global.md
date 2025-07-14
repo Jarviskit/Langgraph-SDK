@@ -47,7 +47,7 @@ class State(TypedDict):
     protected_key: str | None = "protected_key"
 
 async def agent(state: State, config: RunnableConfig) -> Command[Literal['__end__', 'tool_execution_handler']]:
-    agent_runtime = JarvisKitRuntimeManager().get_runtime()
+    jarviskit_runtime = JarvisKitRuntimeManager().get_runtime()
     thread_id = config.get("configurable", {}).get("thread_id", "")
     
     # Agent logic here
@@ -76,8 +76,8 @@ def get_graph(checkpointer: Checkpointer):
 
 ### Runtime Management
 - Always use `JarvisKitRuntimeManager().get_runtime()` for runtime access
-- Save LLM responses using `agent_runtime.put_store_message(thread_id, response)`
-- Access message history using `agent_runtime.get_messages(thread_id)`
+- Save LLM responses using `jarviskit_runtime.put_store_message(thread_id, response)`
+- Access message history using `jarviskit_runtime.get_messages(thread_id)`
 
 ### Tool Development
 - Use `@tool` decorator from `langchain_core.tools`
@@ -120,10 +120,10 @@ examples/
 
 ### Required Variables
 - `OPENAI_API_KEY`: OpenAI API key
-- `JARVIS_KIT_RUNTIME`: Runtime endpoint URL
+- `JARVISKIT_RUNTIME`: Runtime endpoint URL
 - `JARVIS_KIT_NAMESPACE`: Namespace identifier
 - `JARVIS_KIT_NAMESPACE_SECRET`: Namespace API key
-- `RABBITMQ_CONNECTION_STRING`: RabbitMQ connection string
+- `JARVIS_KIT_RABBITMQ_URI`: RabbitMQ connection string
 - `POSTGRES_CONNECTION_STRING`: PostgreSQL connection string (for checkpointing)
 
 ### Optional Variables

@@ -1,5 +1,5 @@
 import threading
-from _thread import lock
+from threading import Lock
 from typing import Any
 from dataclasses import dataclass
 from langgraph.graph.state import CompiledStateGraph
@@ -20,7 +20,7 @@ class InitRuntimeParams:
 class JarvisKitRuntimeManager:
     """Singleton pattern cho quản lý runtime"""
     _instance: Any | None = None
-    _lock: lock = threading.Lock()  
+    _lock: Lock = threading.Lock()  
     
     def __new__(cls):
         if cls._instance is None:

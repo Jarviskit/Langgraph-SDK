@@ -34,7 +34,7 @@ class State(TypedDict):
     protected_key: str = "protected_key"
 
 async def agent(state: State, config: RunnableConfig) -> Command[Literal['no_stream_node', 'tool_execution_handler']]:
-    agent_runtime: JarvisKitRuntime = JarvisKitRuntimeManager().get_runtime()
+    jarviskit_runtime: JarvisKitRuntime = JarvisKitRuntimeManager().get_runtime()
     thread_id = config.get("configurable", {}).get("thread_id", "")
     llm = init_chat_model(
         model="openai:openai:gpt-4.1-nano",
@@ -45,12 +45,12 @@ async def agent(state: State, config: RunnableConfig) -> Command[Literal['no_str
     response = await llm.ainvoke(
         [
             SystemMessage("You are a helpful assistant that can help me with my tasks. * **IMPORTANT**: Before using any tool, you **MUST FIRST** explain to the user what you're about to do. Only then should you call the appropriate tool."),
-            *agent_runtime.get_messages(thread_id)
+            *jarviskit_runtime.get_messages(thread_id)
         ]
     )
     
     # Only put the stream response to the store, to ensure data consistency between actual conversation content and content in message store
-    agent_runtime.put_store_message(thread_id, response)
+    jarviskit_runtime.put_store_message(thread_id, response)
     
     if hasattr(response, "tool_calls") and len(response.tool_calls) > 0:
         return Command( goto="tool_execution_handler" )
@@ -58,7 +58,7 @@ async def agent(state: State, config: RunnableConfig) -> Command[Literal['no_str
         return Command( goto="no_stream_node" )
     
 async def no_stream_node(state: State, config: RunnableConfig) -> Command[Literal['no_stream_by_llm_config']]:
-    agent_runtime: JarvisKitRuntime = JarvisKitRuntimeManager().get_runtime()
+    jarviskit_runtime: JarvisKitRuntime = JarvisKitRuntimeManager().get_runtime()
     thread_id = config.get("configurable", {}).get("thread_id", "")
     llm = init_chat_model(
         model="openai:openai:gpt-4.1-nano",
@@ -69,7 +69,7 @@ async def no_stream_node(state: State, config: RunnableConfig) -> Command[Litera
     response = await llm.ainvoke(
         [
             SystemMessage("You are a helpful assistant that can help me with my tasks. * **IMPORTANT**: Before using any tool, you **MUST FIRST** explain to the user what you're about to do. Only then should you call the appropriate tool."),
-            *agent_runtime.get_messages(thread_id)
+            *jarviskit_runtime.get_messages(thread_id)
         ]
     )
     
@@ -78,7 +78,7 @@ async def no_stream_node(state: State, config: RunnableConfig) -> Command[Litera
     return Command( goto="no_stream_by_llm_config" )
 
 async def no_stream_by_llm_config(state: State, config: RunnableConfig) -> Command[Literal['__end__']]:
-    agent_runtime: JarvisKitRuntime = JarvisKitRuntimeManager().get_runtime()
+    jarviskit_runtime: JarvisKitRuntime = JarvisKitRuntimeManager().get_runtime()
     thread_id = config.get("configurable", {}).get("thread_id", "")
     llm = init_chat_model(
         model="openai:gpt-4o-mini",
@@ -90,7 +90,7 @@ async def no_stream_by_llm_config(state: State, config: RunnableConfig) -> Comma
     response = await llm.with_config(tags=["no_stream"]).ainvoke(
         [
             SystemMessage("You are a helpful assistant that can help me with my tasks. * **IMPORTANT**: Before using any tool, you **MUST FIRST** explain to the user what you're about to do. Only then should you call the appropriate tool."),
-            *agent_runtime.get_messages(thread_id)
+            *jarviskit_runtime.get_messages(thread_id)
         ]
     )
     

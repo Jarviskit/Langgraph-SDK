@@ -29,7 +29,7 @@ async def bootstrap():
     )
     
     rabbitmq_config = RabbitMQConfig(
-        url=cast(str, os.getenv('RABBITMQ_CONNECTION_STRING'))
+        url=cast(str, os.getenv('JARVIS_KIT_RABBITMQ_URI'))
     )
 
     agents = {

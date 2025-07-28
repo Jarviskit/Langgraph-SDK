@@ -1,6 +1,5 @@
 from typing import Any
-from ag_ui.core.events import Event
-
+from ag_ui.core.events import Event, EventType
 
 def to_camel_case(snake_str: str) -> str:
     """Convert snake_case string to camelCase."""
@@ -38,8 +37,11 @@ def encode_event(event: Event) -> dict[str, Any]:
     # Convert the event to a dictionary using Pydantic's model_dump
     event_dict = event.model_dump()
     
-    # Convert all keys to camelCase
     camel_case_dict = convert_dict_to_camel_case(event_dict)
+    
+    # Special handling for TEXT_MESSAGE_END events - preserve toolCalls in original format
+    if event.type == EventType.TEXT_MESSAGE_END and event.raw_event.tool_calls:
+        camel_case_dict['rawEvent']['toolCalls'] = event.raw_event.tool_calls
     
     return camel_case_dict
     
